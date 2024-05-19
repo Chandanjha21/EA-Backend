@@ -1,0 +1,1 @@
+// This file will hold server related info you can delete this as well and continue in app.js too

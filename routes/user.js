@@ -1,0 +1,1 @@
+// This will hold all the routes for the /user URl ex ' router.get('/user' )   , router.post('/user')
