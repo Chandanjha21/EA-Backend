@@ -1,6 +1,9 @@
-const express = require('express')
+import express from 'express';
+import mongoose from 'mongoose';
+import userModel  from './models/user';
+
 const app = express();
-const mongoose = require('mongoose');
+
 
 
 mongoose.connect('mongodb://localhost:27017/' , {
@@ -12,16 +15,15 @@ mongoose.connect('mongodb://localhost:27017/' , {
     (e) => {console.log(e)}
 )
 
-const userSchema = new mongoose.Schema({
-    name : String , 
-    email : String,
-    role : String ,
-})
 
-const userModel = mongoose.model('Users' , userSchema)
 
 app.get('/add' , (req , res) => {
-    userModel.create({name: "Chandan" , email: "ckj@gmail.com" , role : "admin"}).then(() => {
+    
+    const {name , email , role} = req.query ;
+    userModel.create({
+        name  , email , role 
+    })
+    .then(() => {
         console.log("data succesfully added to userModel");
         res.send("Congrats its added");
     }).catch((e) => {
