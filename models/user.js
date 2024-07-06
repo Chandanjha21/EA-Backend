@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
     userId: {
         type: String,
         default: uuidv4, // This ensures the unique id generates for all
+        unique: true
     },
     name: {
         type: String,
@@ -15,6 +16,12 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
+    },
+    contact: {
+        type: String,
+        required: true,
+        unique: true,
+        match: /^[0-9]{10,14}$/,  // Example regex for 10 to 14 digit numbers
     },
     role: {
         type: String,
@@ -35,10 +42,10 @@ const userSchema = new mongoose.Schema({
         default: Date.now,
     },
 
-}, 
+},
     {
-    timestamps: true // This enables both createdAt and updatedAt fields
-})
+        timestamps: true // This enables both createdAt and updatedAt fields
+    })
 
 const userModel = mongoose.model('Users', userSchema)
 

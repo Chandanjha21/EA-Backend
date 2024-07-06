@@ -18,3 +18,13 @@ router.post('/add' , (req  , res) => {
         (e) => console.log('error ocured while creating order' , e)
     )
 })
+
+router.update('/update/:id' , (req , res) => {
+
+})
+
+router.delete('/delete/:id' , (req , res) => {
+
+})
+
+export default router;

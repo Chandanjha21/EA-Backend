@@ -1,9 +1,11 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import userRouter from './routes/user.js'
+import orderRouter from './routes/order.js'
+import productRouter from './routes/product.js'
 
 const app = express();
-app.use(userRouter);
+app.use( '/user' , userRouter);
 
 
 mongoose.connect('mongodb://localhost:27017/' , {
