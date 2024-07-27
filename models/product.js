@@ -13,6 +13,8 @@ const sizeSchema = new mongoose.Schema({
         type: Date,
         default: Date.now 
     },
+}, {
+    timestamps: true // This enables both createdAt and updatedAt fields
 })
 
 const productSchema = new mongoose.Schema({

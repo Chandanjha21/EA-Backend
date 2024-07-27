@@ -4,36 +4,86 @@ import mongoose from 'mongoose';
 
 const router = express.Router();
 
-router.get('/all' , async(req , res) => {
+router.get('/all', async (req, res) => {
     try {
         console.log('Received request for all orders');
-        const products = await orderModel.find({});
-        console.log('Orders fetched successfully');
-        res.status(200).send(products);
+        const orders = await orderModel.find({});
+        if (orders.length > 0) {
+            console.log('Orders fetched successfully');
+            res.status(200).json(orders);
+        } else {
+            console.log('No orders found');
+            res.status(404).json({ message: 'No orders found' });
+        }
     } catch (error) {
-        console.error('Error fetching orders:', error);
-        res.status(500).send('Internal Server Error');
+        console.error('Error fetching orders:', error.message);
+        res.status(500).json({ message: 'Internal Server Error' });
     }
-})
+});
 
-router.post('/add' , (req  , res) => {
-    const {salesman , buyer , items , orderId } = req.body;
+router.post('/add', async (req, res) => {
+    const { salesman, buyer, items, orderId } = req.body;
 
-    console.log('items' , items);
-    orderModel.create({salesman , buyer , items , orderId})
-    .then(
-        console.log(`order created succesfully with orderId : ${orderId}`)
-    ).catch(
-        (e) => console.log('error ocured while creating order' , e)
-    )
-})
+    if (!salesman || !buyer || !items || !orderId) {
+        return res.status(400).json({ message: 'Salesman, buyer, items, and orderId are required.' });
+    }
 
-router.put('/update/:id' , (req , res) => {
+    try {
+        const newOrder = await orderModel.create({ salesman, buyer, items, orderId });
+        console.log(`Order created successfully with orderId: ${newOrder.orderId}`);
+        res.status(201).json({
+            message: 'Order created successfully',
+            orderId: newOrder.orderId
+        });
+    } catch (error) {
+        console.error('Error occurred while creating order:', error.message);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
 
-})
+router.put('/update/:orderId', async (req, res) => {
+    const { orderId } = req.params;
+    const { salesman, buyer, items } = req.body;
 
-router.delete('/delete/:id' , (req , res) => {
+    try {
+        const updateData = {};
+        if (salesman) updateData.salesman = salesman;
+        if (buyer) updateData.buyer = buyer;
+        if (items) updateData.items = items;
 
-})
+        const updatedOrder = await orderModel.findOneAndUpdate({ orderId }, updateData, { new: true, runValidators: true });
+
+        if (!updatedOrder) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.status(200).json({
+            message: 'Order updated successfully',
+            updatedOrder
+        });
+        console.log('Order updated successfully:', updatedOrder.orderId);
+    } catch (error) {
+        console.error('Error occurred while updating order:', error.message);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
+router.delete('/delete/:orderId', async (req, res) => {
+    try {
+        const { orderId } = req.params;
+        const deletedOrder = await orderModel.findOneAndDelete({ orderId });
+
+        if (!deletedOrder) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        res.status(200).json({ message: 'Order deleted successfully' });
+        console.log('Order deleted successfully:', orderId);
+    } catch (error) {
+        console.error('Error occurred while deleting order:', error.message);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
 
 export default router;
