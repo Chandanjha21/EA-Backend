@@ -39,18 +39,26 @@ router.put('/:id' , async(req , res) => {
     }
 })
 
-router.post('/add' , async(req , res) => {
-    //to add new product
-    const {name , id , sizes} = req.body ;
-    try {
-        await productModel.create({name , id , sizes})
-        .then(
-            (product) => {console.log('product added with id :' , product._id)}
-        )
-    } catch (error) {
-        console.log('eror occured while adding' , error.message)
+router.post('/add', async (req, res) => {
+    // To add a new product
+    const { name, sizes } = req.body;
+
+    if (!name || !id || !sizes) {
+        return res.status(400).json({ message: 'Missing required fields: name, id, and sizes are required.' });
     }
-})
+
+    try {
+        // Create and save the new product
+        const newProduct = await productModel.create({ name, sizes });
+        // Respond with success message and product ID
+        res.status(201).json({ message: 'Product added successfully', productId: newProduct._id });
+        console.log('Product added with ID:', newProduct._id);
+    } catch (error) {
+        // Handle any errors that occur
+        console.error('Error occurred while adding product:', error.message);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
 
 router.delete('/:id', async (req, res) => {
     // to remove a product
