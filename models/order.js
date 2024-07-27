@@ -4,7 +4,8 @@ const itemSchema = new mongoose.Schema({
     name : String ,
     size : String ,
     quantity : Number ,
-    Price : Number
+    Price : Number,
+    Amount : Number ,
 })
 
 //here we will write all the order schema and all
@@ -30,7 +31,7 @@ const orderSchema = new mongoose.Schema({
     },
     createdAt : {
         type : Date , 
-        default : now ,
+        default : Date.now ,
     },
     updatedAt : {
         type : Date, 

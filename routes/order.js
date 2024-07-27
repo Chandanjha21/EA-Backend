@@ -1,10 +1,19 @@
 import express from 'express'
 import orderModel from '../models/order.js'
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
-router.get('/all' , (req , res) => {
-    res.send ('Here we are supposed to show list of all orders')
+router.get('/all' , async(req , res) => {
+    try {
+        console.log('Received request for all orders');
+        const products = await orderModel.find({});
+        console.log('Orders fetched successfully');
+        res.status(200).send(products);
+    } catch (error) {
+        console.error('Error fetching orders:', error);
+        res.status(500).send('Internal Server Error');
+    }
 })
 
 router.post('/add' , (req  , res) => {
@@ -19,7 +28,7 @@ router.post('/add' , (req  , res) => {
     )
 })
 
-router.update('/update/:id' , (req , res) => {
+router.put('/update/:id' , (req , res) => {
 
 })
 

@@ -5,8 +5,15 @@ import orderRouter from './routes/order.js'
 import productRouter from './routes/product.js'
 
 const app = express();
-app.use( '/user' , userRouter);
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use( '/api/users' , userRouter);
+app.use( '/api/orders' , orderRouter);
+app.use('/api/products' , productRouter);
 
+app.get('/' , (req, res) => {
+    res.send('Home')
+})
 
 mongoose.connect('mongodb://localhost:27017/' , {
     dbName: "Saleperson"

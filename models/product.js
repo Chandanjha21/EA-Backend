@@ -8,11 +8,16 @@ const sizeSchema = new mongoose.Schema({
     price : {
         type : Number , 
         required : true ,
-    }
+    },
+    updatedAt: {
+        type: Date,
+        default: Date.now 
+    },
 })
 
 const productSchema = new mongoose.Schema({
     name : {type : String , required : true},
+    // id : {type : Number }, cause _id is gonna generate automatically and we will only use that
     sizes : [sizeSchema],
 })
 
