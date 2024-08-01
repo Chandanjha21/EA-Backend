@@ -43,7 +43,7 @@ router.post('/add', async (req, res) => {
     // To add a new product
     const { name, sizes } = req.body;
 
-    if (!name || !id || !sizes) {
+    if (!name || !sizes) {
         return res.status(400).json({ message: 'Missing required fields: name, id, and sizes are required.' });
     }
 

@@ -1,32 +1,35 @@
 import express from 'express';
-import mongoose from 'mongoose';
-import userRouter from './routes/user.js'
-import orderRouter from './routes/order.js'
-import productRouter from './routes/product.js'
+import dotenv from 'dotenv';
+import connectDB from './data/database.js'; // Adjust the path as necessary
+import userRouter from './routes/user.js';
+import orderRouter from './routes/order.js';
+import productRouter from './routes/product.js';
+import cors from 'cors'
+
+// Load environment variables from .env file
+dotenv.config();
 
 const app = express();
+
+// Connect to the database
+connectDB();
+
+// Middleware
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use( '/api/users' , userRouter);
-app.use( '/api/orders' , orderRouter);
-app.use('/api/products' , productRouter);
 
-app.get('/' , (req, res) => {
-    res.send('Home')
-})
+// Routes
+app.use('/api/users', userRouter);
+app.use('/api/orders', orderRouter);
+app.use('/api/products', productRouter);
 
-mongoose.connect('mongodb://localhost:27017/' , {
-    dbName: "Saleperson"
-})
-.then(
-    () => {console.log("database connected")}
-).catch(
-    (e) => {console.log(e)}
-)
+app.get('/', (req, res) => {
+    res.send('Home');
+});
 
-
-
-
-app.listen(5000 , () => {
-    console.log("Listening at port 5000")
-})
+// Start the server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+    console.log(`Listening at port ${PORT}`);
+});
