@@ -24,13 +24,13 @@ router.get('/all', async (req, res) => {
 router.post('/add', async (req, res) => {
     const { salesman, buyer, items, orderId } = req.body;
 
-    if (!salesman || !buyer || !items || !orderId) {
+    if (!salesman || !buyer || !items  ) {
         return res.status(400).json({ message: 'Salesman, buyer, items, and orderId are required.' });
     }
 
     try {
-        const newOrder = await orderModel.create({ salesman, buyer, items, orderId });
-        console.log(`Order created successfully with orderId: ${newOrder.orderId}`);
+        const newOrder = await orderModel.create({ salesman, buyer, items });
+        // console.log(`Order created successfully with orderId: ${newOrder.orderId}`);
         res.status(201).json({
             message: 'Order created successfully',
             orderId: newOrder.orderId
