@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const buyerSchema = mongoose.Schema({
+const customerSchema = mongoose.Schema({
     name: {
         type : String,
         required : true ,
@@ -20,6 +20,15 @@ const buyerSchema = mongoose.Schema({
     status : {
         type : Boolean,
     },
+    coordinates : {
+        type : String ,
+    },
+    storeAddress : {
+        type : String,
+    },
+    createdBy : {
+        type : String, // Salesman name who is related to the party
+    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -31,6 +40,6 @@ const buyerSchema = mongoose.Schema({
 }, {
     timestamps: true
 })
- const buyerModel = mongoose.model('buyers' , buyerSchema)
+ const customerModel = mongoose.model('buyers' , customerSchema)
 
- export default buyerModel;
+ export default customerModel;
