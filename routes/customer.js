@@ -41,15 +41,15 @@ router.put('/:id' , async(req , res) => {
 
 router.post('/add', async (req, res) => {
     // To add a new customer
-    const { name, email , address , contact , status , storeAddress} = req.body;
+    const { name, email , address , gstNumber , contact , status , storeAddress } = req.body;
 
-    if (!name || !sizes) {
+    if (!name ) {
         return res.status(400).json({ message: 'Missing required fields: name, id, and sizes are required.' });
     }
 
     try {
         // Create and save the new customer
-        const newcustomer = await customerModel.create({ name, email , address , contact , status , storeAddress});
+        const newcustomer = await customerModel.create({ name, email , address , gstNumber , contact , status , storeAddress});
         // Respond with success message and customer ID
         res.status(201).json({ message: 'customer added successfully', customerId: newcustomer._id });
         console.log('customer added with ID:', newcustomer._id);

@@ -5,7 +5,7 @@ const customerSchema = mongoose.Schema({
         type : String,
         required : true ,
     },
-    Address: {
+    address: {
         type : String,
         required : true ,
     },
@@ -18,7 +18,7 @@ const customerSchema = mongoose.Schema({
         required : true ,
     },
     status : {
-        type : Boolean,
+        type : String,
     },
     coordinates : {
         type : String ,
@@ -26,8 +26,14 @@ const customerSchema = mongoose.Schema({
     storeAddress : {
         type : String,
     },
+    otherAddress : {
+        type : String,
+    },
     createdBy : {
         type : String, // Salesman name who is related to the party
+    },
+    creditBalance: {
+        type : Number , // This is to record the cashback or refund transactions or advance
     },
     createdAt: {
         type: Date,
@@ -40,6 +46,6 @@ const customerSchema = mongoose.Schema({
 }, {
     timestamps: true
 })
- const customerModel = mongoose.model('buyers' , customerSchema)
+ const customerModel = mongoose.model( 'customers' , customerSchema)
 
  export default customerModel;
