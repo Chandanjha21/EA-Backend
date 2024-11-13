@@ -48,8 +48,15 @@ const customerSchema = mongoose.Schema({
         default: Date.now,
     }
 }, {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
 })
+
+customerSchema.virtual('customerId').get(function () {
+    return this._id;
+  });
+  
  const customerModel = mongoose.model( 'customers' , customerSchema)
 
  export default customerModel;

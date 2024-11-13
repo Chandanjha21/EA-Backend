@@ -4,22 +4,39 @@ import customerModel from '../models/customer.js'
 const router = express.Router();
 
 router.get('/all', async (req, res) => {
-    // To get the list of all customers with variants in JSON format
+    // To get the list of customers with variants in JSON format
     try {
-        const customers = await customerModel.find({});
+        const page = parseInt(req.query.page) || 1;  // Default to page 1 if not specified
+        const limit = parseInt(req.query.limit) || 10;  // Default to 10 items per page
+        const skip = (page - 1) * limit;  // Calculate the number of documents to skip
+
+        // Fetch the customers with pagination
+        const customers = await customerModel.find({})
+            .skip(skip)
+            .limit(limit);
+
+        // Count total documents for pagination calculation
+        const totalCustomers = await customerModel.countDocuments();
 
         if (customers.length > 0) {
-            res.status(200).json(customers);
-            console.log('Fetched customer list successfully');
+            res.status(200).json({
+                customers,
+                totalCustomers,
+                totalPages: Math.ceil(totalCustomers / limit), // Total number of pages
+                currentPage: page,
+            });
+
+            console.log(`Fetched customer list for page ${page} successfully with ${customers.length} records`);
         } else {
             res.status(404).json({ message: 'No customers found' });
-            console.log('No customers found');
+            console.log(`No customers found on page ${page}`);
         }
     } catch (error) {
         console.error('Error occurred while fetching customers:', error.message);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 
 router.put('/:id' , async(req , res) => {
     //to update customers
