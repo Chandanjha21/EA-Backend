@@ -7,7 +7,7 @@ router.get('/all', async (req, res) => {
     // To get the list of customers with variants in JSON format
     try {
         const page = parseInt(req.query.page) || 1;  // Default to page 1 if not specified
-        const limit = parseInt(req.query.limit) || 10;  // Default to 10 items per page
+        const limit = parseInt(req.query.limit) || 1000;  // Default to 1000 items per page , cause we wanna decrease the data load.
         const skip = (page - 1) * limit;  // Calculate the number of documents to skip
 
         // Fetch the customers with pagination
