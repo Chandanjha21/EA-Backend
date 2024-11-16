@@ -6,7 +6,11 @@ const userSchema = new mongoose.Schema({
     userId: {
         type: String,
         default: uuidv4, // This ensures the unique id generates for all
-        unique: true
+        unique: true,
+    },
+    organizationId: {
+        type: String,
+        required: true,
     },
     name: {
         type: String,
@@ -25,7 +29,7 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['admin', 'sales man', 'order manager', 'driver', 'user'],
+        enum: ['admin', 'salesman', 'ordermanager', 'driver', 'user' , 'accountant'],
         default: 'user',
     },
     password: {
@@ -47,6 +51,14 @@ const userSchema = new mongoose.Schema({
         timestamps: true // This enables both createdAt and updatedAt fields
     })
 
+userSchema.pre('save', async function (next) {
+    if (!this.isModified('password')) return next();  // Step 1 // these steps check that the password have been changed recently or not
+    const salt = await bcrypt.genSalt(10);            // Step 2 // so that to hash back and then save else remain same
+    this.password = await bcrypt.hash(this.password, salt); // Step 3
+    next();                                           // Step 4
+});
+
 const userModel = mongoose.model('Users', userSchema)
+
 
 export default userModel;

@@ -5,6 +5,7 @@ import userRouter from './routes/user.js';
 import orderRouter from './routes/order.js';
 import productRouter from './routes/product.js';
 import customerRouter from './routes/customer.js';
+import authRoutes from './routes/authRoutes.js';
 import cors from 'cors'
 
 // Load environment variables from .env file
@@ -25,6 +26,7 @@ app.use('/api/users', userRouter);
 app.use('/api/orders', orderRouter);
 app.use('/api/products', productRouter);
 app.use('/api/customers', customerRouter );
+app.use('/api/auth', authRoutes);
 
 app.get('/', (req, res) => {
     res.send('Home');
