@@ -2,6 +2,8 @@
 
 import express from 'express';
 import userModel from '../models/user.js'
+import authorizeRole from '../middlewares/roleMiddleware.js'
+import { ROLES } from '../config/roles.js';
 
 const router = express.Router();
 
@@ -99,6 +101,22 @@ router.delete('/delete/:userId', async (req, res) => {
        res.status(500).json({ message: 'Internal server error' });
    }
 });
+
+
+
+// Route to manage users (Organization Admin and Super Admin only)
+router.post(
+    '/manage-users',
+    authorizeRole(ROLES.ORGANIZATION_ADMIN),
+    async (req, res) => {
+      try {
+        // Perform user management actions here (e.g., add, remove, update users)
+        res.status(200).json({ message: 'User management successful' });
+      } catch (error) {
+        res.status(500).json({ message: 'Error managing users', error });
+      }
+    }
+  );
 
 
 export default router;

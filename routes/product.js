@@ -1,12 +1,12 @@
 import express from 'express'
-import productModel from '../models/product.js'
+import Product from '../models/product.js'
 
 const router = express.Router();
 
 router.get('/all', async (req, res) => {
     // To get the list of all products with variants in JSON format
     try {
-        const products = await productModel.find({});
+        const products = await Product.find({});
 
         if (products.length > 0) {
             res.status(200).json(products);
@@ -26,7 +26,7 @@ router.put('/:id' , async(req , res) => {
     const id = req.params.id ;
     const updateData = req.body ;
     try {
-        const updatedProduct = await productModel.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+        const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
 
         if (updatedProduct) {
             res.status(200).json({ message: 'Product updated successfully', updatedProduct });
@@ -49,7 +49,7 @@ router.post('/add', async (req, res) => {
 
     try {
         // Create and save the new product
-        const newProduct = await productModel.create({ name, sizes });
+        const newProduct = await Product.create({ name, sizes });
         // Respond with success message and product ID
         res.status(201).json({ message: 'Product added successfully', productId: newProduct._id });
         console.log('Product added with ID:', newProduct._id);
@@ -64,7 +64,7 @@ router.delete('/:id', async (req, res) => {
     // to remove a product
     const id = req.params.id;
     try {
-        const deletedProduct = await productModel.findByIdAndDelete(id);
+        const deletedProduct = await Product.findByIdAndDelete(id);
         if (deletedProduct) {
             res.status(200).json({ message: 'Product deleted successfully', productName: deletedProduct.name });
         } else {

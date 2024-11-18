@@ -57,6 +57,6 @@ customerSchema.virtual('customerId').get(function () {
     return this._id;
   });
   
- const customerModel = mongoose.model( 'customers' , customerSchema)
+ const Customer = mongoose.model( 'customers' , customerSchema)
 
- export default customerModel;
+ export default Customer;

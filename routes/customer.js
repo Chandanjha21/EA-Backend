@@ -1,5 +1,5 @@
 import express from 'express'
-import customerModel from '../models/customer.js'
+import Customer from '../models/customer';
 
 const router = express.Router();
 
@@ -11,12 +11,12 @@ router.get('/all', async (req, res) => {
         const skip = (page - 1) * limit;  // Calculate the number of documents to skip
 
         // Fetch the customers with pagination
-        const customers = await customerModel.find({})
+        const customers = await Customer.find({})
             .skip(skip)
             .limit(limit);
 
         // Count total documents for pagination calculation
-        const totalCustomers = await customerModel.countDocuments();
+        const totalCustomers = await Customer.countDocuments();
 
         if (customers.length > 0) {
             res.status(200).json({
@@ -43,7 +43,7 @@ router.put('/:id' , async(req , res) => {
     const id = req.params.id ;
     const updateData = req.body ;
     try {
-        const updatedcustomer = await customerModel.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
+        const updatedcustomer = await Customer.findByIdAndUpdate(id, updateData, { new: true, runValidators: true });
 
         if (updatedcustomer) {
             res.status(200).json({ message: 'customer updated successfully', updatedcustomer });
@@ -66,7 +66,7 @@ router.post('/add', async (req, res) => {
 
     try {
         // Create and save the new customer
-        const newcustomer = await customerModel.create({ name, email , address , gstNumber , salesmanName , contact , status , storeAddress});
+        const newcustomer = await Customer.create({ name, email , address , gstNumber , salesmanName , contact , status , storeAddress});
         // Respond with success message and customer ID
         res.status(201).json({ message: 'customer added successfully', customerId: newcustomer._id });
         console.log('customer added with ID:', newcustomer._id);
@@ -81,7 +81,7 @@ router.delete('/:id', async (req, res) => {
     // to remove a customer
     const id = req.params.id;
     try {
-        const deletedcustomer = await customerModel.findByIdAndDelete(id);
+        const deletedcustomer = await Customer.findByIdAndDelete(id);
         if (deletedcustomer) {
             res.status(200).json({ message: 'customer deleted successfully', customerName: deletedcustomer.name });
         } else {

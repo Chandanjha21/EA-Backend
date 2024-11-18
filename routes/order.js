@@ -1,13 +1,12 @@
 import express from 'express'
-import orderModel from '../models/order.js'
-import mongoose from 'mongoose';
+import Order from '../models/order.js'
 
 const router = express.Router();
 
 router.get('/all', async (req, res) => {
     try {
         console.log('Received request for all orders');
-        const orders = await orderModel.find({});
+        const orders = await Order.find({});
         if (orders.length > 0) {
             console.log('Orders fetched successfully');
             res.status(200).json(orders);
@@ -29,7 +28,7 @@ router.post('/add', async (req, res) => {
     }
 
     try {
-        const newOrder = await orderModel.create({ salesman, buyer, items });
+        const newOrder = await Order.create({ salesman, buyer, items });
         // console.log(`Order created successfully with orderId: ${newOrder.orderId}`);
         res.status(201).json({
             message: 'Order created successfully',
@@ -51,7 +50,7 @@ router.put('/update/:orderId', async (req, res) => {
         if (buyer) updateData.buyer = buyer;
         if (items) updateData.items = items;
 
-        const updatedOrder = await orderModel.findOneAndUpdate({ orderId }, updateData, { new: true, runValidators: true });
+        const updatedOrder = await Order.findOneAndUpdate({ orderId }, updateData, { new: true, runValidators: true });
 
         if (!updatedOrder) {
             return res.status(404).json({ message: 'Order not found' });
@@ -71,7 +70,7 @@ router.put('/update/:orderId', async (req, res) => {
 router.delete('/delete/:orderId', async (req, res) => {
     try {
         const { orderId } = req.params;
-        const deletedOrder = await orderModel.findOneAndDelete({ orderId });
+        const deletedOrder = await Order.findOneAndDelete({ orderId });
 
         if (!deletedOrder) {
             return res.status(404).json({ message: 'Order not found' });
