@@ -1,11 +1,14 @@
 // backend/routes/authRoutes.js
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcryptjs');
-const User = require('../models/User');
-const { JWT_SECRET } = require('../config');
+import express from 'express';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import User from '../models/user.js';  // Include the .js extension
+// import { JWT_SECRET } from 'dotenv' ; // Include the .js extension
 
 const router = express.Router();
+// Access JWT_SECRET from process.env
+const JWT_SECRET = process.env.JWT_SECRET;
+
 
 // const authMiddleware = require('../middlewares/authMiddleware');
 
@@ -30,13 +33,21 @@ router.get('/me', (req, res) => {
 
 // Login Route
 router.post('/login', async (req, res) => {
+    console.log("Login route hit with data:", req.body);
     const { email, password } = req.body;
     try {
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ message: 'User not found' });
+        console.log("Query result:", user);
+        console.log("the user fouwnd with password" , user.password)
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
-        if (!isPasswordValid) return res.status(400).json({ message: 'Invalid credentials' });
+        // const isPasswordValid = await bcrypt.compare(password, user.password);
+        // if (!isPasswordValid) return res.status(400).json({ message: 'Invalid credentials' });
+
+        // For testing purposes only - directly check password
+        if (password !== user.password) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
 
         // Prepare payload with user info, role, and organization
         const tokenPayload = {
@@ -63,4 +74,4 @@ router.post('/login', async (req, res) => {
     }
 });
 
-module.exports = router;
+export default router;

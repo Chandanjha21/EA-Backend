@@ -26,5 +26,5 @@ const ROLES = {
     return PERMISSIONS[role] ? PERMISSIONS[role].includes(action) : false;
   };
   
-  module.exports = { ROLES, PERMISSIONS, checkPermission };
+export { ROLES, PERMISSIONS, checkPermission };
   

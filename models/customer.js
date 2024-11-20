@@ -53,10 +53,10 @@ const customerSchema = mongoose.Schema({
     toObject: { virtuals: true },
 })
 
-customerSchema.virtual('customerId').get(function () {
+ customerSchema.virtual('customerId').get(function () {
     return this._id;
   });
   
  const Customer = mongoose.model( 'customers' , customerSchema)
 
- export default Customer;
+export default Customer;

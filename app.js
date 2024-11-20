@@ -9,7 +9,10 @@ import authRoutes from './routes/authRoutes.js';
 import cors from 'cors'
 
 // Load environment variables from .env file
-dotenv.config();
+dotenv.config({ path: './data/config.env' });  // Specify the path to the .env file
+
+// Now you can access the variables from the .env file
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const app = express();
 

@@ -2,6 +2,7 @@
 // controllers/userController.js
 
 import User from "../models/user";
+
 // Add User function
 const addUser = async (req, res) => {
   try {
@@ -27,4 +28,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { addUser, deleteUser };
+export default { addUser, deleteUser };

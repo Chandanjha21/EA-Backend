@@ -1,7 +1,7 @@
 // This will hold all the routes for the /user URl ex ' router.get('/user' )   , router.post('/user')
 
 import express from 'express';
-import userModel from '../models/user.js'
+import User from '../models/user.js';
 import authorizeRole from '../middlewares/roleMiddleware.js'
 import { ROLES } from '../config/roles.js';
 
@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.get('/all', async (req, res) => {
    try {
-       const users = await userModel.find({});
+       const users = await User.find({});
        if (users.length > 0) {
            res.status(200).json(users);
            console.log('Fetched user list successfully');
@@ -35,7 +35,7 @@ router.post('/register', async (req, res) => {
        // Hash the password before saving
        const hashedPassword = await bcrypt.hash(password, 10);
 
-       const newUser = await userModel.create({
+       const newUser = await User.create({
            name,
            email,
            password: hashedPassword,
@@ -66,7 +66,7 @@ router.put('/update/:userId', async (req, res) => {
        if (role) updateData.role = role;
        if (password) updateData.password = await bcrypt.hash(password, 10);
 
-       const updatedUser = await userModel.findOneAndUpdate({ userId }, updateData, { new: true, runValidators: true });
+       const updatedUser = await User.findOneAndUpdate({ userId }, updateData, { new: true, runValidators: true });
 
        if (!updatedUser) {
            return res.status(404).json({ message: 'User not found' });
@@ -88,7 +88,7 @@ router.put('/update/:userId', async (req, res) => {
 router.delete('/delete/:userId', async (req, res) => {
    try {
        const { userId } = req.params;
-       const deletedUser = await userModel.findOneAndDelete({ userId });
+       const deletedUser = await User.findOneAndDelete({ userId });
 
        if (!deletedUser) {
            return res.status(404).json({ message: 'User not found' });

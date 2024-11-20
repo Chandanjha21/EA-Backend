@@ -1,8 +1,8 @@
 // middleware/roleMiddleware.js
 
 // This takes the role from the url like /add-user and check for permission using checkpermission method of config 
-import { checkPermission } from '../config/roles';
-import { ROLES } from '../config/roles';
+import { checkPermission } from '../config/roles.js';
+import { ROLES } from '../config/roles.js';
 
 const authorizeRole = (requiredRole) => {
   return (req, res, next) => {
@@ -16,4 +16,4 @@ const authorizeRole = (requiredRole) => {
   };
 };
 
-module.exports = authorizeRole;
+export default authorizeRole;
