@@ -4,6 +4,7 @@ import express from 'express';
 import User from '../models/user.js';
 import authorizeRole from '../middlewares/roleMiddleware.js'
 import { ROLES } from '../config/roles.js';
+import bcrypt from 'bcryptjs';
 
 const router = express.Router();
 
@@ -25,7 +26,7 @@ router.get('/all', async (req, res) => {
 
 
 router.post('/register', async (req, res) => {
-   const { name, email, password, role } = req.body;
+   const { name, email, password, role , contact , organizationId } = req.body;
 
    if (!name || !email || !password) {
        return res.status(400).json({ message: 'Name, email, and password are required.' });
@@ -40,6 +41,8 @@ router.post('/register', async (req, res) => {
            email,
            password: hashedPassword,
            role,
+           contact ,
+           organizationId
        });
 
        res.status(201).json({

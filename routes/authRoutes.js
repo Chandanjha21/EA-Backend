@@ -11,6 +11,10 @@ const JWT_SECRET = process.env.JWT_SECRET;
 
 
 // const authMiddleware = require('../middlewares/authMiddleware');
+router.post('/test', (req, res) => {
+    console.log('Test route hit:', req.body);
+    res.json({ message: 'Received', body: req.body });
+});
 
 router.get('/me', (req, res) => {
     try {
@@ -36,6 +40,7 @@ router.post('/login', async (req, res) => {
     console.log("Login route hit with data:", req.body);
     const { email, password } = req.body;
     try {
+        console.log("Request payload:", req.body);
         const user = await User.findOne({ email });
         if (!user) return res.status(404).json({ message: 'User not found' });
         console.log("Query result:", user);
@@ -60,7 +65,7 @@ router.post('/login', async (req, res) => {
 
         const token = jwt.sign(tokenPayload, JWT_SECRET, { expiresIn: '30d' });
 
-        res.json({
+        res.status(200).json({
             token, user: {
                 id: user._id,
                 name: user.name,
