@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
 import User from '../models/user.js';  // Include the .js extension
 // import { JWT_SECRET } from 'dotenv' ; // Include the .js extension
+import { getUserByEmail } from '../firebase/firestore.js';
 
 const router = express.Router();
 // Access JWT_SECRET from process.env
@@ -15,6 +16,24 @@ router.post('/test', (req, res) => {
     console.log('Test route hit:', req.body);
     res.json({ message: 'Received', body: req.body });
 });
+
+router.get('/get-user', async (req, res) => {
+    const { email } = req.query; // Example: /get-user?email=test@example.com
+    console.log("Received request to fetch user by email:", email);
+  
+    try {
+      const user = await getUserByEmail(email);
+  
+      if (!user) {
+        res.status(404).send({ message: 'User not found.' });
+      } else {
+        res.status(200).send(user);
+      }
+    } catch (error) {
+      console.error("Error in /get-user route:", error);
+      res.status(500).send({ error: 'Failed to fetch user.' });
+    }
+  });
 
 router.get('/me', (req, res) => {
     try {
