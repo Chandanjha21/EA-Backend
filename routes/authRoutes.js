@@ -7,6 +7,7 @@ import User from '../models/user.js';  // Include the .js extension
 import { getUserByEmail } from '../firebase/firestore.js';
 
 const router = express.Router();
+
 // Access JWT_SECRET from process.env
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -18,22 +19,25 @@ router.post('/test', (req, res) => {
 });
 
 router.get('/get-user', async (req, res) => {
-    const { email } = req.query; // Example: /get-user?email=test@example.com
+    const { email } = req.query;
     console.log("Received request to fetch user by email:", email);
-  
+
     try {
-      const user = await getUserByEmail(email);
-  
-      if (!user) {
-        res.status(404).send({ message: 'User not found.' });
-      } else {
-        res.status(200).send(user);
-      }
+        const user = await getUserByEmail(email);
+
+        if (!user) {
+            console.warn("No user found in Firebase for email:", email);
+            res.status(404).send({ message: 'User not found in Firebase.' });
+        } else {
+            console.log("User fetched successfully:", user);
+            res.status(200).send(user);
+        }
     } catch (error) {
-      console.error("Error in /get-user route:", error);
-      res.status(500).send({ error: 'Failed to fetch user.' });
+        console.error("Error in /get-user route:", error.message);
+        res.status(500).send({ error: 'Failed to fetch user.' });
     }
-  });
+});
+
 
 router.get('/me', (req, res) => {
     try {
