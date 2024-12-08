@@ -6,7 +6,9 @@ const router = express.Router();
 router.get('/all', async (req, res) => {
     try {
         console.log('Received request for all orders');
-        const orders = await Order.find({});
+        // Fetch and sort orders by createdAt in descending order
+        const orders = await Order.find({}).sort({ createdAt: -1 });
+        
         if (orders.length > 0) {
             console.log('Orders fetched successfully');
             res.status(200).json(orders);
@@ -19,6 +21,25 @@ router.get('/all', async (req, res) => {
         res.status(500).json({ message: 'Internal Server Error' });
     }
 });
+
+// Fetch order by ID in reverse order - the latest one up and older one down
+router.get("/:orderId", async (req, res) => {
+    const { orderId } = req.params;
+  
+    try {
+        console.log("getting the orderId" , orderId);
+      const order = await Order.findById(orderId);
+  
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+  
+      res.status(200).json(order);
+    } catch (error) {
+      console.error("Error fetching order:", error.message);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  });
 
 router.post('/add', async (req, res) => {
     const { salesman, buyer, items, orderId } = req.body;
