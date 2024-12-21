@@ -22,6 +22,25 @@ router.get('/all', async (req, res) => {
     }
 });
 
+router.get('/my-all', async (req, res) => {
+    try {
+        console.log('Received request for My all orders');
+        // Fetch and sort orders by createdAt in descending order
+        const orders = await Order.find({salesman: req.user.name}).sort({ createdAt: -1 });
+        
+        if (orders.length > 0) {
+            console.log('My Orders fetched successfully');
+            res.status(200).json(orders);
+        } else {
+            console.log('No My orders found');
+            res.status(404).json({ message: 'No My orders found' });
+        }
+    } catch (error) {
+        console.error('Error fetching My orders:', error.message);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+});
+
 // Fetch order by ID in reverse order - the latest one up and older one down
 router.get("/:orderId", async (req, res) => {
     const { orderId } = req.params;
