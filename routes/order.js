@@ -25,12 +25,28 @@ router.get('/all', async (req, res) => {
 router.get('/my-all', async (req, res) => {
     try {
         console.log('Received request for My all orders');
+
+        const page = parseInt(req.query.page) || 1;  // Default to page 1 if not specified
+        const limit = parseInt(req.query.limit) || 1000;  // Default to 1000 items per page , cause we wanna decrease the data load.
+        const skip = (page - 1) * limit;  // Calculate the number of documents to skip
+
         // Fetch and sort orders by createdAt in descending order
-        const orders = await Order.find({salesman: req.user.name}).sort({ createdAt: -1 });
-        
+        const orders = await Order.find({salesman: req.user.name})
+                                    .sort({ createdAt: -1 })
+                                    .skip(skip)
+                                    .limit(limit);
+
+        const totalOrders = await Order.countDocuments({salesman: req.user.name});
+        const totalPages = Math.ceil(totalOrders / limit);
+
         if (orders.length > 0) {
             console.log('My Orders fetched successfully');
-            res.status(200).json(orders);
+            res.status(200).json({
+                orders,
+                totalOrders,
+                totalPages, // Total number of pages
+                currentPage: page,
+            });
         } else {
             console.log('No My orders found');
             res.status(404).json({ message: 'No My orders found' });
