@@ -98,17 +98,22 @@ router.post('/add', async (req, res) => {
 
 router.put('/update/:orderId', async (req, res) => {
     const { orderId } = req.params;
-    const { salesman, buyer, items } = req.body;
+    const { salesman, buyer, items , status , deliveryAddress } = req.body;
+
+    console.log('Updating order:', orderId);
 
     try {
         const updateData = {};
         if (salesman) updateData.salesman = salesman;
         if (buyer) updateData.buyer = buyer;
         if (items) updateData.items = items;
+        if (status) updateData.status = status;
+        if (deliveryAddress) updateData.deliveryAddress = deliveryAddress;
 
-        const updatedOrder = await Order.findOneAndUpdate({ orderId }, updateData, { new: true, runValidators: true });
+        const updatedOrder = await Order.findOneAndUpdate({ _id: orderId }, updateData, { new: true, runValidators: true });
 
         if (!updatedOrder) {
+            console.log("this came " , updatedOrder)
             return res.status(404).json({ message: 'Order not found' });
         }
 

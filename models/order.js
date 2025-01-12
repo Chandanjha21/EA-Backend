@@ -11,12 +11,7 @@ const itemSchema = new mongoose.Schema({
 //here we will write all the order schema and all
 const orderSchema = new mongoose.Schema({
 
-    // IF not sure about the type you can also use mongoose.Schema.Types.Mixed
-
-    // orderId : { //Considering order Id and Bill number will be same
-    //     type : Number, 
-    //     required : true,
-    // },
+   
     salesman : {
         type : String,
         required : true,
@@ -27,6 +22,10 @@ const orderSchema = new mongoose.Schema({
     },
     items : {
         type : [itemSchema], //You can actually use this type as well
+        required : true,
+    },
+    deliveryAddress : { 
+        type : String,
         required : true,
     },
     status : {
