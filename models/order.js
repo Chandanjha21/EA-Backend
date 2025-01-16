@@ -10,8 +10,7 @@ const itemSchema = new mongoose.Schema({
 
 //here we will write all the order schema and all
 const orderSchema = new mongoose.Schema({
-
-   
+       
     salesman : {
         type : String,
         required : true,
