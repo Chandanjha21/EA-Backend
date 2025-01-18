@@ -1,48 +1,29 @@
 import mongoose from "mongoose";
 
 const itemSchema = new mongoose.Schema({
-    name : String ,
-    size : String ,
-    quantity : Number ,
-    price : Number,
-    amount : Number ,
-})
+    name: { type: String, required: true },
+    size: { type: String, required: true },
+    quantity: { type: Number, required: true },
+    price: { type: Number, required: true },
+    amount: { type: Number, required: true },
+});
 
-//here we will write all the order schema and all
-const orderSchema = new mongoose.Schema({
-       
-    salesman : {
-        type : String,
-        required : true,
+const orderSchema = new mongoose.Schema(
+    {
+        salesman: { type: String, required: true },
+        buyer: { type: String, required: true },
+        items: { type: [itemSchema], required: true },
+        deliveryAddress: { type: String, required: true },
+        status: {
+            type: String,
+            enum: ['Completed', 'Shipping', 'Payment Pending', 'Delivered', 'Created'],
+            default: 'Created',
+        },
+        totalAmount: { type: Number, required: true },
+        totalQuantity: { type: Number, required: true },
     },
-    buyer : {
-        type : String , 
-        required : true,
-    },
-    items : {
-        type : [itemSchema], //You can actually use this type as well
-        required : true,
-    },
-    deliveryAddress : { 
-        type : String,
-        required : true,
-    },
-    status : {
-        type: String,
-        enum : ['Completed' , 'Shipping' , 'Payment Pending' , 'Delivered' , 'Created'],
-        default : 'Created' ,
-    },
-    createdAt : {
-        type : Date , 
-        default : Date.now ,
-    },
-    updatedAt : {
-        type : Date, 
-        default : Date.now,
-    }
-} , {
-    timestamps : true
-})
+    { timestamps: true }
+);
 
 const Order = mongoose.model('orders' , orderSchema) ;
 

@@ -77,14 +77,17 @@ router.get("/:orderId", async (req, res) => {
   });
 
 router.post('/add', async (req, res) => {
-    const { salesman, buyer, items, orderId } = req.body;
+    const { salesman, buyer, items, deliveryAddress } = req.body;
 
     if (!salesman || !buyer || !items  ) {
-        return res.status(400).json({ message: 'Salesman, buyer, items, and orderId are required.' });
+        return res.status(400).json({ message: 'Salesman, buyer, items, and deliveryAddress are required.' });
     }
 
+    const totalAmount = items.reduce((acc, item) => acc + item.amount, 0);
+    const totalQuantity = items.reduce((acc , item) => acc + item.quantity , 0);
+
     try {
-        const newOrder = await Order.create({ salesman, buyer, items });
+        const newOrder = await Order.create({ salesman, buyer, items , deliveryAddress , totalAmount , totalQuantity });
         // console.log(`Order created successfully with orderId: ${newOrder.orderId}`);
         res.status(201).json({
             message: 'Order created successfully',
