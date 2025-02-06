@@ -155,103 +155,81 @@ router.delete('/delete/:orderId', async (req, res) => {
 
 // //Bulk upload of orders 
 
+// Multer configuration for file uploads
+const upload = multer({ dest: "uploads/" });
 
+// Helper function to process data
+const processOrders = async (data) => {
+    const orders = [];
 
-// // Set up multer for file uploads
-// const storage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "uploads/"); // Temporary file storage
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + path.extname(file.originalname)); // Generate unique filename
-//   },
-// });
+    data.forEach(row => {
+        try {
+            // Ensure items is parsed as an array
+            let items = typeof row.items === "string" ? JSON.parse(row.items) : row.items;
 
-// const upload = multer({
-//     storage,
-//     limits: { fileSize: 10 * 1024 * 1024 }, // Max file size: 10 MB
-//   }).single("file");
-  
-// // Handle file upload and processing
-// router.post("/upload", upload.single("file"), async (req, res) => {
-//   const file = req.file;
-//   if (!file) {
-//     return res.status(400).json({ message: "No file uploaded." });
-//   }
+            if (!Array.isArray(items)) {
+                console.log("Skipping invalid row (items is not an array):", row);
+                return;
+            }
 
-//   const fileExtension = path.extname(file.originalname).toLowerCase();
+            const order = {
+                salesman: row.salesman,
+                buyer: row.buyer,
+                deliveryAddress: row.deliveryAddress,
+                status: row.status || "Created",
+                totalAmount: row.totalAmount,
+                totalQuantity: row.totalQuantity,
+                items: items.map(item => ({
+                    name: item.name,
+                    size: item.size,
+                    quantity: item.quantity,
+                    price: item.price,
+                    amount: item.amount
+                }))
+            };
 
-//   if (fileExtension === ".csv") {
-//     processCSV(file, res);
-//   } else if (fileExtension === ".xlsx" || fileExtension === ".xls") {
-//     processExcel(file, res);
-//   } else {
-//     return res.status(400).json({ message: "Invalid file type. Please upload CSV or Excel." });
-//   }
-// });
+            orders.push(order);
+        } catch (error) {
+            console.log("Skipping invalid row:", row, error.message);
+        }
+    });
 
-// // Function to process CSV file
-// const processCSV = (file, res) => {
-//   const orders = [];
-//   fs.createReadStream(file.path)
-//     .pipe(csvParser())
-//     .on("data", (row) => {
-//       // Assuming CSV columns: orderId, salesman, buyer, status, date, items
-//       orders.push({
-//         orderId: row.orderId,
-//         salesman: row.salesman,
-//         buyer: row.buyer,
-//         status: row.status,
-//         date: row.date,
-//         items: JSON.parse(row.items),
-//       });
-//     })
-//     .on("end", async () => {
-//       try {
-//         await Order.insertMany(orders);
-//         res.status(200).json({ message: "Orders uploaded successfully." });
-//       } catch (error) {
-//         res.status(500).json({ message: "Error saving orders.", error });
-//       } finally {
-//         fs.unlinkSync(file.path); // Remove file after processing
-//       }
-//     })
-//     .on("error", (err) => {
-//       res.status(500).json({ message: "Error processing CSV file.", error: err });
-//       fs.unlinkSync(file.path);
-//     });
-// };
+    if (orders.length === 0) {
+        throw new Error("No valid orders found in the file.");
+    }
 
-// // Function to process Excel file
-// const processExcel = (file, res) => {
-//   const orders = [];
-//   const workbook = xlsx.readFile(file.path);
-//   const sheetName = workbook.SheetNames[0];
-//   const sheet = workbook.Sheets[sheetName];
-//   const data = xlsx.utils.sheet_to_json(sheet);
+    await Order.insertMany(orders);
+    console.log("Orders successfully inserted!");
+};
 
-//   data.forEach((row) => {
-//     orders.push({
-//       orderId: row.orderId,
-//       salesman: row.salesman,
-//       buyer: row.buyer,
-//       status: row.status,
-//       date: row.date,
-//       items: JSON.parse(row.items),
-//     });
-//   });
+// CSV File Upload Route
+router.post("/upload/csv", upload.single("file"), async (req, res) => {
+    try {
+        const results = [];
+        fs.createReadStream(req.file.path)
+            .pipe(csvParser())
+            .on("data", (data) => results.push(data))
+            .on("end", async () => {
+                const response = await processOrders(results);
+                res.json(response);
+            });
+    } catch (error) {
+        res.status(500).json({ success: false, message: "File processing failed" });
+    }
+});
 
-//   Order.insertMany(orders)
-//     .then(() => {
-//       res.status(200).json({ message: "Orders uploaded successfully." });
-//     })
-//     .catch((error) => {
-//       res.status(500).json({ message: "Error saving orders.", error });
-//     })
-//     .finally(() => {
-//       fs.unlinkSync(file.path); // Remove file after processing
-//     });
-// };
+// Excel File Upload Route
+router.post("/upload/excel", upload.single("file"), async (req, res) => {
+    try {
+        const workbook = xlsx.readFile(req.file.path);
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = xlsx.utils.sheet_to_json(sheet);
 
+        const response = await processOrders(jsonData);
+        res.json(response);
+    } catch (error) {
+        res.status(500).json({ success: false, message: "File processing failed" });
+    }
+});
 
 export default router;
