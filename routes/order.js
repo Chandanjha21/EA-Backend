@@ -131,9 +131,9 @@ router.put('/update/:orderId', async (req, res) => {
         });
         console.log('Order updated successfully:', updatedOrder.orderId);
     } catch (error) {
-        console.error('Error occurred while updating order:', error.message);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
+        console.error('Error occurred while updating order:', error);
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
+    }    
 });
 
 router.delete('/delete/:orderId', async (req, res) => {
@@ -231,5 +231,8 @@ router.post("/upload/excel", upload.single("file"), async (req, res) => {
         res.status(500).json({ success: false, message: "File processing failed" });
     }
 });
+
+// API to get the orders of a particular user only
+
 
 export default router;
