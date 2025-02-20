@@ -106,7 +106,7 @@ router.post('/add', async (req, res) => {
 
 router.put('/update/:orderId', async (req, res) => {
     const { orderId } = req.params;
-    const { salesman, buyer, items , status , deliveryAddress } = req.body;
+    const { salesman, buyer, items , status , deliveryAddress , totalAmount , totalQuantity} = req.body;
 
     console.log('Updating order:', orderId);
 
@@ -117,6 +117,8 @@ router.put('/update/:orderId', async (req, res) => {
         if (items) updateData.items = items;
         if (status) updateData.status = status;
         if (deliveryAddress) updateData.deliveryAddress = deliveryAddress;
+        if (totalAmount) updateData.totalAmount = totalAmount;
+        if (totalQuantity) updateData.totalQuantity = totalQuantity;
 
         const updatedOrder = await Order.findOneAndUpdate({ _id: orderId }, updateData, { new: true, runValidators: true });
 
