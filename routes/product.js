@@ -1,5 +1,6 @@
 import express from 'express'
 import Product from '../models/product.js'
+import mongoose from 'mongoose';
 
 const router = express.Router();
 
@@ -21,6 +22,46 @@ router.get('/all', async (req, res) => {
     }
 });
 
+// Update product prices (bulk update)
+router.put("/update-prices", async (req, res) => {
+    console.log("Received update request:", req.body); // ✅ Log the full request body
+  
+    try {
+      const { updates } = req.body;
+  
+      if (!Array.isArray(updates) || updates.length === 0) {
+        console.log("❌ Invalid update format:", updates);
+        return res.status(400).json({ message: "Invalid update data" });
+      }
+  
+      const bulkOperations = updates.map(({ productId, sizeId, price }) => {
+        if (!mongoose.Types.ObjectId.isValid(productId)) {
+          console.log(`❌ Invalid ObjectId: ${productId}`);
+          return null;
+        }
+  
+        return {
+          updateOne: {
+            filter: { _id: new mongoose.Types.ObjectId(productId), "sizes.size": sizeId },
+            update: { $set: { "sizes.$.price": price } },
+          },
+        };
+      }).filter(Boolean); // Remove null values
+  
+      if (bulkOperations.length === 0) {
+        console.log("❌ No valid updates to process.");
+        return res.status(400).json({ message: "No valid updates to process." });
+      }
+  
+      const result = await Product.bulkWrite(bulkOperations);
+      console.log("✅ Prices updated successfully:", result);
+      res.json({ message: "Prices updated successfully", result });
+    } catch (error) {
+      console.error("🔥 Error updating prices:", error);
+      res.status(500).json({ message: "Internal server error", error });
+    }
+  });
+  
 router.put('/:id' , async(req , res) => {
     //to update products
     const id = req.params.id ;
@@ -75,6 +116,7 @@ router.delete('/:id', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 
 
 export default router ;

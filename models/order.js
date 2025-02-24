@@ -21,6 +21,7 @@ const orderSchema = new mongoose.Schema(
         },
         totalAmount: { type: Number, required: true },
         totalQuantity: { type: Number, required: true },
+        note: { type: String },
     },
     { timestamps: true }
 );
